@@ -11,15 +11,59 @@ from .trend_detector import find_trends_in_stock
 from config.stocks import NIFTY_500_STOCKS, LOOKBACK_DAYS
 
 
+def check_reversal_already_crossed(
+    ha_df: pd.DataFrame,
+    candle1_date: datetime,
+    candle3_high: float
+) -> bool:
+    """
+    Check if reversal signal has already been crossed.
+    
+    Args:
+        ha_df: Heiken Ashi DataFrame
+        candle1_date: Date of Candle 1 (newest candle in trend)
+        candle3_high: High value of Candle 3 (oldest candle in trend)
+    
+    Returns:
+        True if reversal already crossed, False otherwise
+    """
+    # Find the index of Candle 1 in the dataframe
+    candle1_idx = None
+    for idx in ha_df.index:
+        idx_date = idx.date() if isinstance(idx, datetime) else pd.Timestamp(idx).date()
+        candle1_date_obj = candle1_date.date() if isinstance(candle1_date, datetime) else pd.Timestamp(candle1_date).date()
+        if idx_date == candle1_date_obj:
+            candle1_idx = ha_df.index.get_loc(idx)
+            break
+    
+    # Check if reversal already happened after Candle 1
+    if candle1_idx is not None and candle1_idx < len(ha_df) - 1:
+        # Check all days after Candle 1
+        for idx in range(candle1_idx + 1, len(ha_df)):
+            day_ha_close = ha_df.iloc[idx]['Close']
+            if day_ha_close > candle3_high:
+                return True
+    
+    return False
+
+
 def create_pool(output_file: str = "data/pool.csv") -> pd.DataFrame:
     """
     Create pool of stocks that satisfy the trend criteria.
+    
+    Only includes stocks where:
+    1. A 3-candle downward trend pattern is detected (all RED candles)
+    2. The reversal signal has NOT been crossed yet (no day after Candle 1 
+       where HA close > Candle 3 high)
+    
+    This ensures we only track stocks with active trends that haven't 
+    already reversed.
     
     Args:
         output_file: Path to output CSV file
     
     Returns:
-        DataFrame with stocks that have detected trends
+        DataFrame with stocks that have detected trends (not yet breached)
     """
     print(f"Starting pool creation job at {datetime.now()}")
     print(f"Scanning {len(NIFTY_500_STOCKS)} stocks...")
@@ -48,15 +92,27 @@ def create_pool(output_file: str = "data/pool.csv") -> pd.DataFrame:
             trend = find_trends_in_stock(symbol, ha_df)
             
             if trend:
-                print(f"Trend found! Candle 3 high: {trend['candle3_high']:.2f}")
-                pool_results.append({
-                    'symbol': symbol,
-                    'candle1_date': trend['candle1_date'],
-                    'candle2_date': trend['candle2_date'],
-                    'candle3_date': trend['candle3_date'],
-                    'candle3_high': trend['candle3_high'],
-                    'detection_date': trend['detection_date']
-                })
+                # Check if reversal signal has already been crossed
+                # We only want stocks where the trend exists but hasn't been breached yet
+                candle1_date = trend['candle1_date']
+                candle3_high = trend['candle3_high']
+                
+                reversal_already_crossed = check_reversal_already_crossed(
+                    ha_df, candle1_date, candle3_high
+                )
+                
+                if reversal_already_crossed:
+                    print(f"Trend found but reversal already crossed (Candle 3 high: {candle3_high:.2f})")
+                else:
+                    print(f"Trend found! Candle 3 high: {candle3_high:.2f}")
+                    pool_results.append({
+                        'symbol': symbol,
+                        'candle1_date': trend['candle1_date'],
+                        'candle2_date': trend['candle2_date'],
+                        'candle3_date': trend['candle3_date'],
+                        'candle3_high': trend['candle3_high'],
+                        'detection_date': trend['detection_date']
+                    })
             else:
                 print("No trend")
         
