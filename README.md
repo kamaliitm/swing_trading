@@ -100,7 +100,11 @@ python scripts/run_finalization.py
 
 3. **Verify cron jobs:**
    ```bash
+   # Quick check
    crontab -l
+   
+   # Or use the verification script (recommended)
+   python scripts/verify_cron.py
    ```
 
 **Job Schedule:**
@@ -146,14 +150,33 @@ Log files are created in the `logs/` directory:
 - `logs/finalization.log` - Finalization job logs
 - `logs/pool_creation.log` - Pool creation job logs
 
+## Verification
+
+Run the verification script to check your setup:
+
+```bash
+python scripts/verify_cron.py
+```
+
+This will:
+- Check if all required paths exist
+- Verify scripts are valid and executable
+- Check if cron jobs are installed
+- Show current crontab entries
+- Display log file status
+- Provide instructions if setup is incomplete
+
 ## Troubleshooting
 
 1. **Import errors**: Make sure you're running scripts from the project root directory
 2. **Data fetch failures**: Check internet connection and stock symbol format (should end with `.NS` for Indian stocks)
 3. **Cron not running**: 
-   - Check cron service is running: `sudo service cron status`
+   - Check cron service is running: `sudo service cron status` (Linux) or check System Settings on macOS
    - Verify paths in crontab are absolute
-   - Check log files for errors
+   - Check log files for errors: `tail -f logs/*.log`
+   - On macOS, ensure Terminal/iTerm has Full Disk Access permissions
+4. **Check cron jobs**: Run `crontab -l` to view installed jobs
+5. **Remove cron jobs**: Run `crontab -e` and delete the lines, or `crontab -r` to remove all
 
 ## Notes
 
