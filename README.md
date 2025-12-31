@@ -43,12 +43,20 @@ swing_trading/
    cd swing_trading
    ```
 
-2. **Install dependencies:**
+2. **Create and activate virtual environment:**
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # On macOS/Linux
+   # or
+   .venv\Scripts\activate  # On Windows
+   ```
+
+3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Configure stock list:**
+4. **Configure stock list:**
    - Edit `config/stocks.py` to add/update the Nifty 500 stock symbols
    - Update `LOOKBACK_DAYS` if needed (default: 30 days)
 
@@ -60,11 +68,13 @@ You can run the jobs manually for testing:
 
 **Pool Creation Job:**
 ```bash
+source .venv/bin/activate  # Activate venv first
 python scripts/run_pool_creation.py
 ```
 
 **Finalization Job:**
 ```bash
+source .venv/bin/activate  # Activate venv first
 python scripts/run_finalization.py
 ```
 
@@ -75,7 +85,12 @@ python scripts/run_finalization.py
    - Replace `/opt/homebrew/opt/python@3.13/bin/python3.13` with your Python 3 executable path
    - Find your Python path: `which python3` or `python3 -c "import sys; print(sys.executable)"`
 
-2. **Add cron jobs:**
+2. **Update crontab.example:**
+   - Replace `/Users/kamalkambe/swameeyam/projects/swing_trading` with your actual project path
+   - Replace the Python path with your venv Python path: `.venv/bin/python3`
+   - Or use the full path: `/path/to/swing_trading/.venv/bin/python3`
+
+3. **Add cron jobs:**
    ```bash
    # Edit crontab
    crontab -e

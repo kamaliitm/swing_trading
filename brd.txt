@@ -5,7 +5,7 @@ There is a swing trading strategy that uses the Heiken Ashi candles to identify 
 
 Strategy:
 * Use the Heiken Ashi candles (daily) chart style. Understanding Heiken Ashi is not important.
-* We need to look for 3 candles in a row In the reverse chronological order, not necessarily starting from today (any date within the last month - no hard limit like this though) which satisfy the following criteria:
+* We need to look for 3 RED candles in a row in the reverse chronological order, not necessarily starting from today (any date within the last month - no hard limit like this though) which satisfy the following criteria:
     * the first candle’s low value must be lower than that of second candle 
     * the first candle’s high value must be lower than that of second candle
     * the second candle’s low value must be lower than that of third candle 

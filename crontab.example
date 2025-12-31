@@ -10,8 +10,10 @@
 
 # Finalization Job - Runs at 3:15 PM IST (15:15) on weekdays
 # Format: minute hour day month weekday
-15 15 * * 1-5 cd /Users/kamalkambe/swameeyam/projects/swing_trading && /opt/homebrew/opt/python@3.13/bin/python3.13 scripts/run_finalization.py >> logs/finalization.log 2>&1
+# Note: Update PROJECT_PATH to your actual project directory
+PROJECT_PATH=/Users/kamalkambe/swameeyam/projects/swing_trading
+15 15 * * 1-5 cd $PROJECT_PATH && $PROJECT_PATH/.venv/bin/python3 scripts/run_finalization.py >> logs/finalization.log 2>&1
 
 # Pool Creation Job - Runs at 4:30 PM IST (16:30) on weekdays
-30 16 * * 1-5 cd /Users/kamalkambe/swameeyam/projects/swing_trading && /opt/homebrew/opt/python@3.13/bin/python3.13 scripts/run_pool_creation.py >> logs/pool_creation.log 2>&1
+30 16 * * 1-5 cd $PROJECT_PATH && $PROJECT_PATH/.venv/bin/python3 scripts/run_pool_creation.py >> logs/pool_creation.log 2>&1
 

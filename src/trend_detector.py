@@ -10,11 +10,12 @@ def detect_trend(ha_df: pd.DataFrame) -> Optional[dict]:
     Detect 3-candle downward trend pattern in reverse chronological order.
     
     Pattern criteria (in reverse chronological order, newest first):
+    - All 3 candles must be RED (bearish): Open > Close
     - Candle 1 (newest): low < Candle 2 low, high < Candle 2 high
     - Candle 2 (middle): low < Candle 3 low, high < Candle 3 high
     - Candle 3 (oldest): Highest point in the pattern
     
-    In chronological order, this represents a downward trend.
+    In chronological order, this represents a downward trend with all red candles.
     
     Args:
         ha_df: DataFrame with Heiken Ashi OHLC data, sorted oldest first
@@ -55,14 +56,30 @@ def detect_trend(ha_df: pd.DataFrame) -> Optional[dict]:
         candle3 = reversed_df.iloc[i + 2]  # Oldest
         
         # Extract values
+        c1_open = candle1['Open']
+        c1_close = candle1['Close']
         c1_low = candle1['Low']
         c1_high = candle1['High']
+        
+        c2_open = candle2['Open']
+        c2_close = candle2['Close']
         c2_low = candle2['Low']
         c2_high = candle2['High']
+        
+        c3_open = candle3['Open']
+        c3_close = candle3['Close']
         c3_low = candle3['Low']
         c3_high = candle3['High']
         
-        # Check all 4 conditions:
+        # Check that all 3 candles are RED (bearish): Open > Close
+        all_red = (c1_open > c1_close and 
+                   c2_open > c2_close and 
+                   c3_open > c3_close)
+        
+        if not all_red:
+            continue  # Skip if not all candles are red
+        
+        # Check all 4 trend conditions:
         # 1. Candle 1 low < Candle 2 low
         # 2. Candle 1 high < Candle 2 high
         # 3. Candle 2 low < Candle 3 low
