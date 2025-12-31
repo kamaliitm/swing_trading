@@ -1,0 +1,2 @@
+"""Swing Trading Automation System"""
+

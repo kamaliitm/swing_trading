@@ -1,0 +1,26 @@
+Swing Trading Automation of Stock Selection
+
+
+There is a swing trading strategy that uses the Heiken Ashi candles to identify the stocks which has good probability to go higher as 5%, 10%, 15% or maybe more. The USP of this strategy is that the identification is done before the trend is caught in the market. 
+
+Strategy:
+* Use the Heiken Ashi candles (daily) chart style. Understanding Heiken Ashi is not important.
+* We need to look for 3 candles in a row In the reverse chronological order, not necessarily starting from today (any date within the last month - no hard limit like this though) which satisfy the following criteria:
+    * the first candle’s low value must be lower than that of second candle 
+    * the first candle’s high value must be lower than that of second candle
+    * the second candle’s low value must be lower than that of third candle 
+    * the second candle’s high value must be lower than that of third candle
+* Now, we say that we have a trend.
+* Everyday, we must see during the close of the day (around 3:15 IST), if the stock’s close value (the current value at that time is considered a close value because we cannot wait for the actual close as we need to place order before the close), has crossed the third candle’s high in the trend described in the previous point (third of the three candles in the reverse chronological order), then we will consider that stock to buy.
+
+Implementation Strategy
+
+1. Pool Creation Job
+    1. First we go through the all the stocks and check if each one satisfies the trend criteria.
+    2. We collect the pool of stocks which satisfy the trend criteria. 
+
+2. Finalization Job
+    1. From the pool, for each stock whether the day’s close is above the first candle’s high (in the reverse chronological order)
+    2. We save that list and consider that as the final stocks to invest.
+
+We would need to run the Finalization job at 3:15 PM every weekday (trading day). We run the pool creation job every weekday at 4:30 PM.

@@ -1,0 +1,17 @@
+# Swing Trading Automation - Cron Configuration Example
+# 
+# Instructions:
+# 1. Update the paths below to match your system
+# 2. Update the Python path to match your Python 3 executable
+# 3. Copy these lines to your crontab: crontab -e
+#
+# Note: Cron times are in system timezone. The scripts handle IST conversion internally.
+# Make sure your system timezone is set correctly, or adjust the times below.
+
+# Finalization Job - Runs at 3:15 PM IST (15:15) on weekdays
+# Format: minute hour day month weekday
+15 15 * * 1-5 cd /Users/kamalkambe/swameeyam/projects/swing_trading && /opt/homebrew/opt/python@3.13/bin/python3.13 scripts/run_finalization.py >> logs/finalization.log 2>&1
+
+# Pool Creation Job - Runs at 4:30 PM IST (16:30) on weekdays
+30 16 * * 1-5 cd /Users/kamalkambe/swameeyam/projects/swing_trading && /opt/homebrew/opt/python@3.13/bin/python3.13 scripts/run_pool_creation.py >> logs/pool_creation.log 2>&1
+
